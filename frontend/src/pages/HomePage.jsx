@@ -5,6 +5,7 @@ import NoteCard from '../components/NoteCard.jsx'
 import RateLimitedUI from '../components/RateLimitedUI.jsx';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import api from '../lib/axios.js';
 
 const HomePage = () => {
   const [isRateLimited, setIsRateLimited] = useState(false);
@@ -13,7 +14,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const res = await axios.get('https://opulent-space-winner-x5vq5q4xq9543vppw-5001.app.github.dev/api/notes');
+        const res = await api.get('/notes');
         setNotes(res.data);
         setIsRateLimited(false);
       } catch (error) {
