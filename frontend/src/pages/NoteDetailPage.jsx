@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router";
 import api from "../lib/axios.js";
 import { ArrowLeftIcon, LoaderIcon, Trash2Icon } from "lucide-react";
+import toast from 'react-hot-toast';
 
 const NoteDetailPage = () => {
   const [note, setNote] = useState(null);
@@ -22,8 +23,34 @@ const NoteDetailPage = () => {
     }
     fetchNote();
   }, [id]);
-  const handleDelete = async () => {};
-  const handleSave = async () => {};
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this note?')) return;
+    try {
+      await api.delete(`/notes/${id}`);
+      toast.success('Note deleted');
+      navigate('/')
+    } catch (error) {
+      console.log('Error deleting the note:', error)
+      toast.error('Failed to delete the note');
+    }
+  };
+  const handleSave = async () => {
+    if (!note.title.trim() || !note.content.trim()) {
+      toast.error('Please add a title or content');
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.put(`/notes/${id}`, note);
+      toast.success('Note updated successfully');
+      navigate('/');
+    } catch (error) {
+      console.log('Error saving the note:', error);
+      toast.error('Failed to update note');
+    } finally {
+      setSaving(false);
+    }
+  };
   if (loading) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center">
